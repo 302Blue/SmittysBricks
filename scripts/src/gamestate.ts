@@ -1,7 +1,6 @@
 class GameState {
     score: number;
     lives: number;
-    level: number;
     activePowerUp: PowerUp;
     paddle: Paddle;
     gameMode: string;
@@ -9,11 +8,10 @@ class GameState {
     solidFloor: boolean;
     
     constructor(score: number, lives: number,
-            level: number, activePowerUp: PowerUp,
-            paddle: Paddle, gameMode: string) {
+            paddle: Paddle, activePowerUp: PowerUp,
+            gameMode: string) {
         this.score = score;
         this.activePowerUp = activePowerUp;
-        this.level = level;
         this.lives = lives;
         this.gameMode = gameMode;
         this.paddle = paddle;
@@ -22,18 +20,16 @@ class GameState {
     }
 
     startGameState() {
+        // Set # of lives for game modes
         if (this.gameMode == "NormalMode") {
             this.lives = 3;
         } else if (this.gameMode == "HardCoreMode") {
             this.lives = 1;
-        } else if (this.gameMode == "AILab") {
-
-        } else if (this.gameMode == "LevelEditor") {
-
-        }
+        } 
     }
 
     updateGameState() {
+        // Constantly update score & lives
         if (this.gameMode == "NormalMode") {
             $("#lives").text(`Lives: ${this.lives}`);
             $("#score").text(`Score: ${this.score}`);
@@ -43,11 +39,7 @@ class GameState {
         } else if (this.gameMode == "HardCoreMode") {
             $("#lives").text(`Lives: ${this.lives}`);
             $("#score").text(`Score: ${this.score}`);
-        } else if (this.gameMode == "AILab") {
-
-        } else if (this.gameMode == "LevelEditor") {
-        
-        }
+        } 
     }
 
     endPowerUp() {

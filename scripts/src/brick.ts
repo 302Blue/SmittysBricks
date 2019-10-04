@@ -24,6 +24,7 @@ class Brick extends Rectangle {
     }
 
     updateBrick() {
+        //For moving bricks
         if (this.speedX > 0) {
             if (this.x + this.speedX < this.endX) {
                 this.x += this.speedX;

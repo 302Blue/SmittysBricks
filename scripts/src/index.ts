@@ -1,6 +1,7 @@
 let gameStart = false;
 
 $(document).ready(function () {
+    // Listeners for game choices
     $('#game-header-bar').hide();
     $('#level-editor-header-bar').hide();
     $('#paddle').hide();
@@ -11,70 +12,36 @@ $(document).ready(function () {
     $('#normalMode').click(function () {
         gameState.setGameMode("NormalMode");
         gameStart = true;
-        initNormalMode();
+        initGameMode();
     })
     $('#zenMode').click(function () {
         gameState.setGameMode("ZenMode");
         gameStart = true;
-        initNormalMode();
+        initGameMode();
     })
     $('#hardCore').click(function () {
         gameState.setGameMode("HardCoreMode");
         gameStart = true;
-        initNormalMode();
+        initGameMode();
     })
     $('#aiLab').click(function () {
         gameState.setGameMode("AILab");
         gameStart = true;
-        initNormalMode();
+        initGameMode();
     })
-    $('#customLevelMode').click(function () {
-        gameState.setGameMode("CustomLevelMode");
-        initCustomLevelMode();
-    });
     $('#levelEditor').click(function () {
         gameState.setGameMode("LevelEditor");
         gameStart = true;
         initLevelEditorMode();
     })
+    $('#customLevelMode').click(function () {
+        gameState.setGameMode("CustomLevelMode");
+        gameStart = true;
+        initCustomLevelMode();
+    });
 });
 
-$("input[type='text']").on("keydown", function (evt) {
-    evt.stopPropagation();
-});
-
-const HEADER_HEIGHT = 50;
-const PADDLE_AREA_HEIGHT = 250;
-const BRICK_AREA_HEIGHT = 500;
-const BOARD_HEIGHT = PADDLE_AREA_HEIGHT + BRICK_AREA_HEIGHT;
-const BOARD_WIDTH = 1000;
-
-const BRICK_WIDTH = BOARD_WIDTH / 10;
-const BRICK_HEIGHT = BRICK_WIDTH / 2;
-
-let keysPressed: Set<string> = new Set();
-
-let powerUp = new PowerUp(0, 0);
-let board = new Board(0, BOARD_WIDTH, BOARD_HEIGHT, 0);
-let paddle = new Paddle(BOARD_WIDTH / 2, 10, 200, 20, 5, board.getRightEdgeX());
-let ball = new Ball(BOARD_WIDTH / 2, 100, 0, 0, 10);
-let gameState = new GameState(0, 0, 0, powerUp, paddle, "");
-let bricks: Map<number, Brick>;
-let brickSeq: number;
-let ai = new AI();
-
-function clearBoard() {
-    brickSeq = 0;
-    bricks = new Map();
-    $('#brick-container').empty();
-}
-
-function initNormalMode() {
-    gameState.startGameState();
-    keysPressed.clear();
-    clearBoard();
-    fillBoard();
-    
+function keyHandler() {
     $(document).on("keydown", function (evt) {
         if (gameStart) {
             if (evt.key == 'ArrowLeft') {
@@ -83,7 +50,7 @@ function initNormalMode() {
                 keysPressed.add('right');
             } else if (evt.key == ' ') {
                 keysPressed.add('space');
-            } else if (evt.key == 'Escape' || evt.key == 'Esc') {
+            } else if ((evt.key == 'Escape') || (evt.key == 'Esc')) {
                 keysPressed.add('restart');
             }
         }
@@ -99,6 +66,38 @@ function initNormalMode() {
             }
         }
     });
+    
+    $("input[type='text']").on("keydown", function (evt) {
+        evt.stopPropagation();
+    });
+}
+
+const HEADER_HEIGHT = 50;
+const PADDLE_AREA_HEIGHT = 250;
+const BRICK_AREA_HEIGHT = 500;
+const BOARD_HEIGHT = PADDLE_AREA_HEIGHT + BRICK_AREA_HEIGHT;
+const BOARD_WIDTH = 1000;
+
+const BRICK_WIDTH = BOARD_WIDTH / 10;
+const BRICK_HEIGHT = BRICK_WIDTH / 2;
+
+let keysPressed: Set<string> = new Set();
+
+let powerUp = new PowerUp(0, 0);
+let board = new Board(0, BOARD_WIDTH, BOARD_HEIGHT, 0);
+let paddle = new Paddle(BOARD_WIDTH / 2, 10, 200, 20, 5, board.getRightEdgeX());
+let ball = new Ball(BOARD_WIDTH / 2, 100, 0, 0, 10, 1);
+let gameState = new GameState(0, 0, paddle, powerUp, "");
+let bricks: Map<number, Brick>;
+let brickSeq: number;
+let ai = new AI();
+
+function initGameMode() {
+    gameState.startGameState();
+    keysPressed.clear();
+    keyHandler();
+    clearBoard();
+    fillBoard();
 
     $('#game-header-bar').show();
     $('#level-editor-header-bar').hide();
@@ -117,22 +116,25 @@ function fillBoard() {
             let x: number = (i * BRICK_WIDTH) + (BRICK_WIDTH / 2);
             let y: number = BOARD_HEIGHT - (j * BRICK_HEIGHT) - (BRICK_HEIGHT / 2);
             let r: number = Math.ceil(Math.random() * 25);
-            if (r > 3) {
-                r = 0;
-            }
-            bricks.set(brickSeq, new Brick(x, y, BRICK_WIDTH, BRICK_HEIGHT, x, y, getRndInteger(1, 4), new PowerUp(r, 3)));
+            if (r > 3) { r = 0 }
+            bricks.set(brickSeq, new Brick(x, y, BRICK_WIDTH, BRICK_HEIGHT, x, y, getRndInteger(0, 4), new PowerUp(r, 3)));
             brickSeq++;
         }
     }
-    for (const [i, brick] of bricks) {
-        $('#brick-container').append('<div id="brick-' + i + '"></div>');
-    }
+    for (const [i, brick] of bricks) { $('#brick-container').append('<div id="brick-' + i + '"></div>') }
 
+}
+
+function clearBoard() {
+    brickSeq = 0;
+    bricks = new Map();
+    $('#brick-container').empty();
 }
 
 function initCustomLevelMode() {
     gameState.startGameState();
     keysPressed.clear();
+    keyHandler();
     clearBoard();
     
     $(".modal").modal('hide');
@@ -184,31 +186,6 @@ function initCustomLevelMode() {
                 $(button).hide();
             }
         });
-    });
-    
-    $(document).on("keydown", function (evt) {
-        if (gameStart) {
-            if (evt.key == 'ArrowLeft') {
-                keysPressed.add('left');
-            } else if (evt.key == 'ArrowRight') {
-                keysPressed.add('right');
-            } else if (evt.key == ' ') {
-                keysPressed.add('space');
-            } else if (evt.key == 'Escape' || evt.key == 'Esc') {
-                keysPressed.add('restart');
-            }
-        }
-    });
-    $(document).on("keyup", function (evt) {
-        if (gameStart) {
-            if (evt.key == 'ArrowLeft') {
-                keysPressed.delete('left');
-            } else if (evt.key == 'ArrowRight') {
-                keysPressed.delete('right');
-            } else if (evt.key == ' ') {
-                keysPressed.delete('space');
-            }
-        }
     });
 
     $('#game-header-bar').show();
@@ -410,19 +387,6 @@ function initLevelEditorMode() {
     });
 }
 
-/* function computer() {
-    if ((ball.getX() - paddle.getX() - paddle.width * 0.1) > paddle.width * 0.2) {
-        if (paddle.getX() < window.innerWidth - paddle.width) {
-            paddle.updatePosition('right');
-        }
-    }
-    else if ((ball.getX() - paddle.getX() - paddle.width * 0.1) < paddle.width * 0.2) {
-        if (paddle.getX() > 0) {
-            paddle.updatePosition('left');
-        }
-    }
-} */
-
 let lastFrameTimeMs: number = 0;
 let maxFPS: number = 120;
 let delta: number = 0;
@@ -432,8 +396,6 @@ let bStrength: number = 1;
 function update(delta: number) {
     if (gameStart && gameState.getGameMode() != "LevelEditor") {
         if (gameState.getGameMode() == 'AILab') {
-            // console.log('AI Running');
-            // computer();
             ai.save_data(paddle,ball,gameState); 
             let predict: string = ai.predict(paddle,ball,board);
             paddle.updatePosition(predict);
@@ -453,50 +415,7 @@ function update(delta: number) {
         } else if (keysPressed.has('restart')) { 
             location.reload();
         }
-        // Check for powerups
-        let activePowerup = gameState.getPowerUp().getPid();
-        switch(activePowerup) {
-            case 1: // Super strength
-                bStrength = 3;
-                $("#hints").text("Super Strength");
-                if (gameState.getGameMode() == "HardCoreMode") { 
-                    paddle.setWidth(100);
-                } else {
-                    paddle.setWidth(200);
-                }
-                gameState.setFloor(false);
-                break;
-            case 2: // Solid floor
-                bStrength = 1;
-                $("#hints").text("Solid Floor");
-                if (gameState.getGameMode() == "HardCoreMode") { 
-                    paddle.setWidth(100);
-                } else {
-                    paddle.setWidth(200);
-                }
-                gameState.setFloor(true);
-                break;
-            case 3: // Big paddle
-                bStrength = 1;
-                if (gameState.getGameMode() == "HardCoreMode") { 
-                    paddle.setWidth(200);
-                } else {
-                    paddle.setWidth(400);
-                }
-                $("#hints").text("Big Paddle");
-                gameState.setFloor(false);
-                break;
-            default: // No powerup
-                bStrength = 1;
-                gameState.setFloor(false);
-                if (gameState.getGameMode() == "HardCoreMode") { 
-                    paddle.setWidth(100);
-                } else {
-                    paddle.setWidth(200);
-                }
-                break;
-        }
-        ball.moveAndCollide(gameState, bricks, board, paddle, delta, bStrength);
+        ball.moveAndCollide(bricks, board, gameState, paddle, delta);
         gameState.updateGameState();
         for (const [i, brick] of bricks) {
             brick.updateBrick();

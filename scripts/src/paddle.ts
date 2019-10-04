@@ -12,6 +12,7 @@ class Paddle extends Rectangle {
     }
 
     updatePosition(direction: string) {
+        // For moving objects
         if ((direction == 'left') && (super.getLeftX() > 0)) {
             super.setX(super.getX() - this.speed);
         }
