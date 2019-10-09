@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/CISC474-2019F-Group1/Project1.git"
+    "url": "git+https://github.com/302Blue/SmittysBricks.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/CISC474-2019F-Group1/Project1/issues"
+    "url": "https://github.com/302Blue/SmittysBricks/issues"
   },
-  "homepage": "https://github.com/CISC474-2019F-Group1/Project1#readme",
+  "homepage": "https://github.com/302Blue/SmittysBricks#readme",
   "dependencies": {
     "@types/bootstrap": "^4.3.1",
     "@types/jquery": "^3.3.31",
